@@ -100,3 +100,20 @@ JOIN TSApplication tsa
   ON tsa.Id = spe.EntityId
 WHERE tsa.TSNumber = '1538'
 order by spl.CreatedOn desc
+
+--поиск зацикленных зависимостей пакетов
+
+--Oracle
+SELECT "spd"."SysPackageId","sp"."Name","spd"."DependOnPackageId","sp1"."Name","spd1"."DependOnPackageId","sp2"."Name" FROM "SysPackageDependency" "spd"
+  INNER JOIN "SysPackage" "sp" ON "sp"."Id" = "spd"."SysPackageId"
+  INNER JOIN "SysPackage" "sp1" ON "sp1"."Id" = "spd"."DependOnPackageId"
+  INNER JOIN "SysPackageDependency" "spd1" ON "spd1"."SysPackageId" = "spd"."DependOnPackageId"
+  INNER JOIN "SysPackage" "sp2" ON "sp2"."Id" = "spd1"."DependOnPackageId"
+  WHERE "sp"."Name" = 'название менявшегося пакета';
+  
+--MS SQL
+select spd.syspackageid, sp.name, spd.dependonpackageid, sp2.name, spd2.dependonpackageid, sp3.name from SysPackageDependency spd 
+inner join syspackage sp on sp.id = spd.syspackageid 
+inner join syspackage sp2 on sp2.id = spd.dependonpackageid
+inner join SysPackageDependency spd2 on spd2.syspackageid = spd.dependonpackageid
+inner join syspackage sp3 on sp3.id = spd2.dependonpackageid where sp.name = 'название менявшегося пакета'
